@@ -6,10 +6,13 @@ import { Results } from '@mediapipe/hands';
 
 interface SceneProps {
   handResults: Results | null;
+  onShapeChange?: (index: number) => void;
   shapeIndex?: number;
+  color?: string;
+  size?: number;
 }
 
-export const Scene: React.FC<SceneProps> = React.memo(({ handResults, shapeIndex }) => {
+export const Scene: React.FC<SceneProps> = React.memo(({ handResults, onShapeChange, shapeIndex, color, size }) => {
   return (
     <div className="w-full h-full bg-[#050505]">
       <Canvas
@@ -27,7 +30,13 @@ export const Scene: React.FC<SceneProps> = React.memo(({ handResults, shapeIndex
         <ambientLight intensity={0.5} />
         
         <Suspense fallback={null}>
-          <Particles handResults={handResults} externalShapeIndex={shapeIndex} />
+          <Particles 
+            handResults={handResults} 
+            onShapeChange={onShapeChange}
+            externalShapeIndex={shapeIndex} 
+            color={color}
+            size={size}
+          />
           <Stars radius={100} depth={50} count={800} factor={4} saturation={0} fade speed={0.05} />
         </Suspense>
 

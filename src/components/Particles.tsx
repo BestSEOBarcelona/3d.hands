@@ -5,7 +5,10 @@ import { Results } from '@mediapipe/hands';
 
 interface ParticlesProps {
   handResults: Results | null;
+  onShapeChange?: (index: number) => void;
   externalShapeIndex?: number;
+  color?: string;
+  size?: number;
 }
 
 const PARTICLE_COUNT = 5000;
@@ -13,7 +16,13 @@ const PARTICLE_COUNT = 5000;
 type ShapeType = 'SPHERE' | 'CUBE' | 'TORUS' | 'PYRAMID' | 'SPIRAL';
 const SHAPES: ShapeType[] = ['SPHERE', 'CUBE', 'TORUS', 'PYRAMID', 'SPIRAL'];
 
-export const Particles: React.FC<ParticlesProps> = ({ handResults, externalShapeIndex = 0 }) => {
+export const Particles: React.FC<ParticlesProps> = ({ 
+  handResults, 
+  onShapeChange,
+  externalShapeIndex = 0,
+  color = "#00ffcc",
+  size = 0.12
+}) => {
   const pointsRef = useRef<THREE.Points>(null);
   const { viewport } = useThree();
   const smoothedHandRef = useRef(new THREE.Vector3(0, 0, 0));
@@ -149,7 +158,10 @@ export const Particles: React.FC<ParticlesProps> = ({ handResults, externalShape
       // Map fingers to shapes and scale
       if (fingersUp > 0) {
         const newShapeIndex = Math.min(fingersUp - 1, SHAPES.length - 1);
-        setLocalShapeIndex(newShapeIndex);
+        if (newShapeIndex !== localShapeIndex) {
+          setLocalShapeIndex(newShapeIndex);
+          onShapeChange?.(newShapeIndex);
+        }
         isClosed = false;
       } else {
         isClosed = true;
@@ -212,8 +224,8 @@ export const Particles: React.FC<ParticlesProps> = ({ handResults, externalShape
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.12}
-        color="#00ffcc"
+        size={size}
+        color={color}
         transparent
         opacity={0.4}
         blending={THREE.AdditiveBlending}

@@ -3,13 +3,18 @@ import { Results } from '@mediapipe/hands';
 import { HandTracker } from './components/HandTracker';
 import { Scene } from './components/Scene';
 import { VoiceController } from './components/VoiceController';
+import { ShapeInspector } from './components/ShapeInspector';
+import { ShapeDisplay } from './components/ShapeDisplay';
 import { motion, AnimatePresence } from 'motion/react';
-import { Hand, Info, Maximize2, MousePointer2, Zap } from 'lucide-react';
+import { Hand, Info, Maximize2, MousePointer2, Zap, Sliders } from 'lucide-react';
 
 export default function App() {
   const [handResults, setHandResults] = useState<Results | null>(null);
   const [showOverlay, setShowOverlay] = useState(true);
   const [shapeIndex, setShapeIndex] = useState(0);
+  const [color, setColor] = useState('#00ffcc');
+  const [size, setSize] = useState(0.12);
+  const [showInspector, setShowInspector] = useState(false);
 
   const handleHandUpdate = useCallback((results: Results) => {
     // Use functional update to avoid dependency on handResults state
@@ -24,7 +29,13 @@ export default function App() {
     <div className="relative w-full h-screen overflow-hidden bg-black text-white font-sans">
       {/* 3D Scene Layer */}
       <div className="absolute inset-0 z-0">
-        <Scene handResults={handResults} shapeIndex={shapeIndex} />
+        <Scene 
+          handResults={handResults} 
+          onShapeChange={setShapeIndex}
+          shapeIndex={shapeIndex} 
+          color={color}
+          size={size}
+        />
       </div>
 
       {/* Hand Tracker UI */}
@@ -134,16 +145,58 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Minimal Toggle for Overlay */}
+      {/* Minimal Toggles */}
       {!showOverlay && (
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          onClick={() => setShowOverlay(true)}
-          className="absolute top-8 left-8 z-20 p-2 rounded-full border border-white/10 bg-black/40 backdrop-blur-md text-white/40 hover:text-white transition-colors"
-        >
-          <Info size={16} />
-        </motion.button>
+        <div className="absolute top-8 left-8 z-20 flex flex-col gap-3">
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            onClick={() => setShowOverlay(true)}
+            className="p-3 rounded-full border border-white/10 bg-black/40 backdrop-blur-md text-white/40 hover:text-white transition-colors"
+            title="Información"
+          >
+            <Info size={18} />
+          </motion.button>
+          
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            onClick={() => setShowInspector(!showInspector)}
+            className={`p-3 rounded-full border transition-all duration-300 ${
+              showInspector 
+                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' 
+                : 'bg-black/40 border-white/10 text-white/40 hover:text-white'
+            }`}
+            title="Ajustes de Forma"
+          >
+            <Sliders size={18} />
+          </motion.button>
+        </div>
+      )}
+
+      {/* Shape Inspector Panel */}
+      {!showOverlay && showInspector && (
+        <div className="absolute top-32 left-8 z-20">
+          <ShapeInspector 
+            key={shapeIndex}
+            shapeIndex={shapeIndex}
+            color={color}
+            size={size}
+            onColorChange={setColor}
+            onSizeChange={setSize}
+            onReset={() => {
+              setColor('#00ffcc');
+              setSize(0.12);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Dynamic Shape Display (HUD) */}
+      {!showOverlay && (
+        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20">
+          <ShapeDisplay shapeIndex={shapeIndex} />
+        </div>
       )}
 
       {/* Decorative Elements */}
