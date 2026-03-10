@@ -1,0 +1,8 @@
+{
+  "name": "Aether Hands",
+  "description": "An interactive 3D particle experience controlled by your hands using Three.js and MediaPipe.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
