@@ -7,34 +7,39 @@ interface ShapeDisplayProps {
 
 const SHAPE_DATA = [
   { 
-    name: 'Esfera Primordial', 
+    name: 'Aprobación Estelar', 
     tag: 'GEOMETRÍA_01', 
-    lore: 'El estado de equilibrio absoluto. Las partículas convergen en un centro gravitatorio perfecto, emulando el nacimiento de una estrella.' 
+    lore: 'El pulgar hacia arriba, un símbolo universal de positividad manifestado en el vacío. La energía se concentra en un eje vertical ascendente.' 
   },
   { 
-    name: 'Cubo Hiperbóreo', 
+    name: 'Proyector de Fotones', 
     tag: 'GEOMETRÍA_02', 
-    lore: 'Orden y estructura. Los átomos digitales se alinean en ejes ortogonales, creando una arquitectura de datos inquebrantable.' 
+    lore: 'Estructura balística de luz. Las partículas se alinean en un cañón de precisión, listas para disparar ráfagas de información pura.' 
   },
   { 
-    name: 'Anillo Toroidal', 
+    name: 'Trébol de la Suerte', 
     tag: 'GEOMETRÍA_03', 
-    lore: 'Energía en bucle infinito. Un flujo continuo que desafía el principio y el fin, canalizando la corriente a través de un vacío central.' 
+    lore: 'Simetría trilobulada. Un bucle de tres pétalos que canaliza la fortuna a través de la armonía matemática y el equilibrio natural.' 
   },
   { 
-    name: 'Vórtice Piramidal', 
+    name: 'Corona de Soberanía', 
     tag: 'GEOMETRÍA_04', 
-    lore: 'Concentración de flujo ascendente. La base sostiene la expansión mientras el ápice proyecta la intención hacia el infinito.' 
+    lore: 'El ápice del poder geométrico. Cinco puntas de luz que se elevan desde una base circular, simbolizando el dominio sobre el caos.' 
   },
   { 
-    name: 'Espiral Áurea', 
+    name: 'Pirotecnia Digital', 
     tag: 'GEOMETRÍA_05', 
-    lore: 'Crecimiento orgánico fractal. La secuencia matemática de la vida manifestada en luz, expandiéndose eternamente hacia el exterior.' 
+    lore: 'Expansión explosiva. Un estallido de partículas que nacen en un punto y se dispersan en una esfera perfecta de luz efímera.' 
+  },
+  { 
+    name: 'Galaxia Espiral', 
+    tag: 'GEOMETRÍA_06', 
+    lore: 'El cosmos en la palma de tu mano. Brazos de estrellas que giran en un baile eterno alrededor de un núcleo de gravedad infinita.' 
   },
 ];
 
 export const ShapeDisplay: React.FC<ShapeDisplayProps> = ({ shapeIndex }) => {
-  const current = SHAPE_DATA[shapeIndex];
+  const current = SHAPE_DATA[shapeIndex] || SHAPE_DATA[0];
 
   return (
     <div className="pointer-events-none select-none">
@@ -67,7 +72,7 @@ export const ShapeDisplay: React.FC<ShapeDisplayProps> = ({ shapeIndex }) => {
 
           {/* Decorative bits */}
           <div className="flex gap-1 mt-4">
-            {[...Array(5)].map((_, i) => (
+            {[...Array(6)].map((_, i) => (
               <div 
                 key={i} 
                 className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${

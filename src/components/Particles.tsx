@@ -13,8 +13,8 @@ interface ParticlesProps {
 
 const PARTICLE_COUNT = 5000;
 
-type ShapeType = 'SPHERE' | 'CUBE' | 'TORUS' | 'PYRAMID' | 'SPIRAL';
-const SHAPES: ShapeType[] = ['SPHERE', 'CUBE', 'TORUS', 'PYRAMID', 'SPIRAL'];
+type ShapeType = 'THUMBS_UP' | 'GUN' | 'CLOVER' | 'CROWN' | 'FIREWORKS' | 'GALAXY';
+const SHAPES: ShapeType[] = ['THUMBS_UP', 'GUN', 'CLOVER', 'CROWN', 'FIREWORKS', 'GALAXY'];
 
 export const Particles: React.FC<ParticlesProps> = ({ 
   handResults, 
@@ -48,62 +48,109 @@ export const Particles: React.FC<ParticlesProps> = ({
   // Pre-calculate target positions for current shape to avoid heavy math in loop
   const getTargetPos = (i: number, shape: ShapeType, time: number, target: THREE.Vector3, isClosed: boolean) => {
     const t = i / PARTICLE_COUNT;
-    const scale = isClosed ? 0.3 : 1.0; // Compact vs Expansive scale
+    const scale = isClosed ? 0.3 : 1.0;
     
     switch (shape) {
-      case 'SPHERE': {
-        const phi = Math.acos(-1 + (2 * i) / PARTICLE_COUNT);
-        const theta = Math.sqrt(PARTICLE_COUNT * Math.PI) * phi;
-        const r = 3 * scale;
-        target.set(
-          Math.cos(theta) * Math.sin(phi) * r,
-          Math.sin(theta) * Math.sin(phi) * r,
-          Math.cos(phi) * r
-        );
+      case 'THUMBS_UP': {
+        // Hand base (fist) + Thumb
+        if (i < PARTICLE_COUNT * 0.75) {
+          // Fist: Rounded box
+          const x = (Math.random() - 0.5) * 3 * scale;
+          const y = (Math.random() - 0.5) * 2.5 * scale - 1.5 * scale;
+          const z = (Math.random() - 0.5) * 2 * scale;
+          target.set(x, y, z);
+        } else {
+          // Thumb: Cylinder pointing up
+          const angle = (i / (PARTICLE_COUNT * 0.25)) * Math.PI * 2;
+          const h = (i % 100) / 100 * 3.5 * scale;
+          const r = 0.7 * scale;
+          target.set(
+            Math.cos(angle) * r - 1.2 * scale,
+            h - 0.5 * scale,
+            Math.sin(angle) * r
+          );
+        }
         break;
       }
-      case 'CUBE': {
-        const side = Math.ceil(Math.pow(PARTICLE_COUNT, 1/3));
-        const x = (i % side) - side / 2;
-        const y = (Math.floor(i / side) % side) - side / 2;
-        const z = (Math.floor(i / (side * side))) - side / 2;
-        const s = 0.4 * scale;
-        target.set(x * s, y * s, z * s);
+      case 'GUN': {
+        // Barrel + Grip
+        if (i < PARTICLE_COUNT * 0.65) {
+          // Barrel: Horizontal cylinder
+          const angle = (i / (PARTICLE_COUNT * 0.65)) * Math.PI * 2;
+          const l = (i % 200) / 200 * 6 * scale;
+          const r = 0.5 * scale;
+          target.set(l - 1 * scale, Math.cos(angle) * r + 0.5 * scale, Math.sin(angle) * r);
+        } else {
+          // Grip: Vertical cylinder
+          const angle = (i / (PARTICLE_COUNT * 0.35)) * Math.PI * 2;
+          const h = (i % 150) / 150 * 3.5 * scale;
+          const r = 0.7 * scale;
+          target.set(Math.cos(angle) * r - 1 * scale, -h + 0.5 * scale, Math.sin(angle) * r);
+        }
         break;
       }
-      case 'TORUS': {
-        const u = t * Math.PI * 2;
-        const v = (i % 50) / 50 * Math.PI * 2;
-        const R = 3 * scale;
-        const r = 1 * scale;
-        target.set(
-          (R + r * Math.cos(v)) * Math.cos(u),
-          (R + r * Math.cos(v)) * Math.sin(u),
-          r * Math.sin(v)
-        );
+      case 'CLOVER': {
+        // 3-leaf clover using polar math
+        const petals = 3;
+        const angle = t * Math.PI * 2;
+        const r = (2 + 1.5 * Math.abs(Math.cos(petals * angle / 2))) * 1.5 * scale;
+        // Add a stem
+        if (i > PARTICLE_COUNT * 0.9) {
+          const st = (i - PARTICLE_COUNT * 0.9) / (PARTICLE_COUNT * 0.1);
+          target.set(0.2 * scale, -st * 4 * scale, 0);
+        } else {
+          target.set(
+            Math.cos(angle) * r,
+            Math.sin(angle) * r,
+            (Math.random() - 0.5) * 0.3 * scale
+          );
+        }
         break;
       }
-      case 'PYRAMID': {
-        const layers = 30;
-        const layer = Math.floor(Math.sqrt(i / (PARTICLE_COUNT / (layers * layers))));
-        const layerFrac = layer / layers;
-        const pointsInLayer = i % Math.max(1, Math.floor(PARTICLE_COUNT / layers));
-        const angle = (pointsInLayer / (PARTICLE_COUNT / layers)) * Math.PI * 2;
-        const radius = (1 - layerFrac) * 4 * scale;
+      case 'CROWN': {
+        // Ring base + spikes
+        const angle = t * Math.PI * 2;
+        const radius = 3.5 * scale;
+        const numSpikes = 5;
+        // Zigzag for spikes
+        const spikeFactor = Math.abs((angle * numSpikes / Math.PI) % 2 - 1);
+        const h = spikeFactor * 3 * scale;
         target.set(
           Math.cos(angle) * radius,
-          (layerFrac * 6 - 3) * scale,
+          h - 1 * scale,
           Math.sin(angle) * radius
         );
         break;
       }
-      case 'SPIRAL': {
-        const angle = 0.1 * i;
-        const r = 0.05 * i * 0.1 * scale;
+      case 'FIREWORKS': {
+        // Expanding and fading shell
+        const cycle = (time * 1.2) % 2;
+        const r = cycle * 8 * scale;
+        const phi = Math.acos(-1 + (2 * i) / PARTICLE_COUNT);
+        const theta = Math.sqrt(PARTICLE_COUNT * Math.PI) * phi;
+        // Add some "trails" or jitter
+        const jitter = Math.sin(time * 10 + i) * 0.1 * cycle;
         target.set(
-          Math.cos(angle) * r,
-          Math.sin(angle) * r,
-          (Math.random() - 0.5) * 0.5 * scale
+          Math.cos(theta) * Math.sin(phi) * (r + jitter),
+          Math.sin(theta) * Math.sin(phi) * (r + jitter),
+          Math.cos(phi) * (r + jitter)
+        );
+        break;
+      }
+      case 'GALAXY': {
+        // Spiral galaxy with arms
+        const arm = i % 3;
+        const angleOffset = (arm * Math.PI * 2) / 3;
+        const dist = t * 8 * scale;
+        const angle = dist * 1.5 + angleOffset + time * 0.2;
+        const thickness = (1 - t) * 1.5 * scale;
+        const noiseX = (Math.random() - 0.5) * thickness;
+        const noiseY = (Math.random() - 0.5) * thickness * 0.3;
+        const noiseZ = (Math.random() - 0.5) * thickness;
+        target.set(
+          Math.cos(angle) * dist + noiseX,
+          noiseY,
+          Math.sin(angle) * dist + noiseZ
         );
         break;
       }

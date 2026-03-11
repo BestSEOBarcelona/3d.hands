@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Settings2, Palette, Box, Circle, Triangle, Activity, Wind } from 'lucide-react';
+import { Settings2, Palette, ThumbsUp, Crosshair, Clover, Crown, Sparkles, Orbit } from 'lucide-react';
 
 interface ShapeInspectorProps {
   shapeIndex: number;
@@ -12,11 +12,12 @@ interface ShapeInspectorProps {
 }
 
 const SHAPE_INFO = [
-  { name: 'Esfera', icon: Circle, desc: 'Simetría perfecta. Flujo omnidireccional.' },
-  { name: 'Cubo', icon: Box, desc: 'Estructura ortogonal. Rigidez geométrica.' },
-  { name: 'Toroide', icon: Activity, desc: 'Bucle infinito. Dinámica toroidal.' },
-  { name: 'Pirámide', icon: Triangle, desc: 'Ascensión focal. Energía piramidal.' },
-  { name: 'Espiral', icon: Wind, desc: 'Crecimiento áureo. Expansión logarítmica.' },
+  { name: 'Aprobación', icon: ThumbsUp, desc: 'Positividad ascendente. Eje vertical de luz.' },
+  { name: 'Pistola', icon: Crosshair, desc: 'Precisión balística. Cañón de fotones.' },
+  { name: 'Trébol', icon: Clover, desc: 'Suerte trilobulada. Armonía natural.' },
+  { name: 'Corona', icon: Crown, desc: 'Soberanía geométrica. Ápice del poder.' },
+  { name: 'Fuegos', icon: Sparkles, desc: 'Estallido efímero. Expansión esférica.' },
+  { name: 'Galaxia', icon: Orbit, desc: 'Espiral infinita. Baile de estrellas.' },
 ];
 
 const COLORS = [

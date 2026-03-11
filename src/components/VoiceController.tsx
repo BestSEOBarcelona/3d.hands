@@ -23,7 +23,7 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({ onCommand, cur
     errorRef.current = error;
   }, [error]);
 
-  const shapes = ['Esfera', 'Cubo', 'Toroide', 'Pirámide', 'Espiral'];
+  const shapes = ['Aprobación', 'Pistola', 'Trébol', 'Corona', 'Fuegos', 'Galaxia'];
 
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -51,6 +51,7 @@ export const VoiceController: React.FC<VoiceControllerProps> = ({ onCommand, cur
       else if (command.includes('tres')) onCommand(2);
       else if (command.includes('cuatro')) onCommand(3);
       else if (command.includes('cinco')) onCommand(4);
+      else if (command.includes('seis')) onCommand(5);
     };
 
     recognition.onend = () => {

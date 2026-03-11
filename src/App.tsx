@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Results } from '@mediapipe/hands';
 import { HandTracker } from './components/HandTracker';
 import { Scene } from './components/Scene';
@@ -15,6 +15,18 @@ export default function App() {
   const [color, setColor] = useState('#00ffcc');
   const [size, setSize] = useState(0.12);
   const [showInspector, setShowInspector] = useState(false);
+
+  // Keydown listener for manual shape switching
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const idx = parseInt(e.key) - 1;
+      if (idx >= 0 && idx < 6) {
+        setShapeIndex(idx);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleHandUpdate = useCallback((results: Results) => {
     // Use functional update to avoid dependency on handResults state
